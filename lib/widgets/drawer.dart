@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/orders.dart';
+import '../screens/user_products_screen.dart';
 
 class DrawerWidget extends StatelessWidget {
   @override
@@ -9,7 +10,7 @@ class DrawerWidget extends StatelessWidget {
         children: <Widget>[
           AppBar(
             title: Text('Hello Friend!'),
-            automaticallyImplyLeading: false,
+            // automaticallyImplyLeading: false,
           ),
           // Container(
           //   height: 90,
@@ -39,6 +40,13 @@ class DrawerWidget extends StatelessWidget {
             leading: Icon(Icons.payment),
             title: Text('Orders', style: TextStyle(fontSize: 16)),
           ),
+          Divider(),
+          ListTile(
+            onTap: () => Navigator.of(context)
+                .pushReplacementNamed(UserProductsScreen.namedroute),
+            leading: Icon(Icons.edit),
+            title: Text('Manage Products', style: TextStyle(fontSize: 16)),
+          )
         ],
       ),
     );

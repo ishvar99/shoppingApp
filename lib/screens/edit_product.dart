@@ -15,6 +15,12 @@ class _EditProductState extends State<EditProduct> {
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
+  var _init=true;
+  var _initialValues={
+    'title':'',
+    'price':'',
+    'description':'',
+      };
   var _editedProduct =
       Product(id: null, title: '', description: '', price: 0.0, imageUrl: '');
   @override
@@ -22,7 +28,23 @@ class _EditProductState extends State<EditProduct> {
     _imageUrlFocusNode.addListener(updateImage);
     super.initState();
   }
-
+  @override
+  void didChangeDependencies() {
+    if(_init){
+      final productId=ModalRoute.of(context).settings.arguments as String;
+      if(productId!=null){
+           _editedProduct=Provider.of<Products>(context,listen: false).findById(productId);
+      _initialValues={
+        'title':_editedProduct.title,
+        'price':_editedProduct.price.toString(),
+        'description':_editedProduct.description,
+        };
+        _imageUrlController.text=_editedProduct.imageUrl;
+      }
+    }
+    _init=false;
+    super.didChangeDependencies();
+  }
   @override
   void dispose() {
     _priceFocusNode.dispose();
@@ -40,7 +62,12 @@ class _EditProductState extends State<EditProduct> {
      if(!valid)
      return;
       _formKey.currentState.save();
-      Provider.of<Products>(context).addProduct(_editedProduct);
+     if(_editedProduct.id!=null){
+           Provider.of<Products>(context).updateProduct(_editedProduct.id,_editedProduct);
+     }
+     else{ 
+      Provider.of<Products>(context,listen: false).addProduct(_editedProduct);
+     }
     }
   @override
   Widget build(BuildContext context) {
@@ -63,6 +90,7 @@ class _EditProductState extends State<EditProduct> {
               children: <Widget>[
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Title'),
+                  initialValue: _initialValues['title'],
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
@@ -74,16 +102,18 @@ class _EditProductState extends State<EditProduct> {
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
                         title: value,
                         description: _editedProduct.description,
                         price: _editedProduct.price,
-                        imageUrl: _editedProduct.imageUrl
+                        imageUrl: _editedProduct.imageUrl,
+                        isFavorite: _editedProduct.isFavorite
                         );
                   },
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Price'),
+                  initialValue:_initialValues['price'],
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   focusNode: _priceFocusNode,
@@ -100,15 +130,17 @@ class _EditProductState extends State<EditProduct> {
                   },
                    onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
                         title: _editedProduct.title,
                         description: _editedProduct.description,
                         price: double.parse(value),
-                        imageUrl: _editedProduct.imageUrl
+                        imageUrl: _editedProduct.imageUrl,
+                        isFavorite: _editedProduct.isFavorite
                         );
                   },
                 ),
                 TextFormField(
+                  initialValue: _initialValues['description'],
                   decoration: InputDecoration(labelText: 'Description'),
                   textInputAction: TextInputAction.next,
                   maxLines: 3,
@@ -122,11 +154,12 @@ class _EditProductState extends State<EditProduct> {
                   },
                    onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
                         title: _editedProduct.title,
                         description: value,
                         price: _editedProduct.price,
-                        imageUrl: _editedProduct.imageUrl
+                        imageUrl: _editedProduct.imageUrl,
+                        isFavorite: _editedProduct.isFavorite
                         );
                   },
                 ),
@@ -165,11 +198,12 @@ class _EditProductState extends State<EditProduct> {
                         },
                          onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
                         title: _editedProduct.title,
                         description: _editedProduct.description,
                         price: _editedProduct.price,
-                        imageUrl: value
+                        imageUrl: value,
+                        isFavorite: _editedProduct.isFavorite
                         );
                   },
                       ),

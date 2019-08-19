@@ -44,7 +44,7 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  void addProduct(product) {
+  void addProduct(Product product) {
     _items.add(Product(
       id: DateTime.now().toString(),
       title: product.title,
@@ -54,7 +54,11 @@ class Products with ChangeNotifier {
     ));
     notifyListeners();
   }
-
+  void updateProduct(String productId,Product newProduct){
+        int prodIndex=_items.indexWhere((pro)=>pro.id==productId);
+        _items[prodIndex]=newProduct;
+        notifyListeners();
+  }
   List<Product> get favoriteItems {
     return _items.where((item) => item.isFavorite).toList();
   }

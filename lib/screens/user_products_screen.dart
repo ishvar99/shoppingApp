@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../widgets/user_product_item.dart';
 import '../providers/products.dart';
 import '../widgets/drawer.dart';
+import '../screens/edit_product.dart';
 class UserProductsScreen extends StatelessWidget {
   static const namedroute = '/user-products';
   @override
@@ -14,7 +15,9 @@ class UserProductsScreen extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(EditProduct.namedroute);
+            },
           )
         ],
       ),

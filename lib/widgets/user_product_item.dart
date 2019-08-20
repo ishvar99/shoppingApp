@@ -16,16 +16,16 @@ class UserProductItem extends StatelessWidget {
         ),
         trailing: Container(
           width: 100,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             IconButton(
               icon: Icon(
                 Icons.edit,
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
-                Navigator.pushNamed(context,EditProduct.namedroute,arguments: product.id);
+                Navigator.pushNamed(context, EditProduct.namedroute,
+                    arguments: product.id);
               },
             ),
             IconButton(
@@ -34,7 +34,33 @@ class UserProductItem extends StatelessWidget {
                 color: Theme.of(context).errorColor,
               ),
               onPressed: () {
-                Provider.of<Products>(context).deleteProduct(product.id);
+                 showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text('Are you Sure'),
+                    content:
+                        Text('Do you want to delete this product permanently!'),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('Yes'),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      )
+                    ],
+                  ),
+                )
+              .then((val){
+                   if(val)
+                      Provider.of<Products>(context).deleteProduct(product.id);
+                });
+              
               },
             )
           ]),

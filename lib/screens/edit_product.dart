@@ -13,9 +13,13 @@ class _EditProductState extends State<EditProduct> {
   final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
+  // final _titleController = TextEditingController();
+  // final _priceController = TextEditingController();
+  // final _descriptionController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   var _init = true;
+  var _isLoading=false;
   var _initialValues = {
     'title': '',
     'price': '',
@@ -61,6 +65,9 @@ class _EditProductState extends State<EditProduct> {
     if (!_imageUrlFocusNode.hasFocus) setState(() {});
   }
 
+  // bool isEdited() {
+  //    }
+
   void saveProduct() {
     bool valid = _formKey.currentState.validate();
     if (!valid) return;
@@ -73,6 +80,9 @@ class _EditProductState extends State<EditProduct> {
                 FlatButton(
                   child: Text('Yes'),
                   onPressed: () {
+                    setState(() {
+                     _isLoading=true; 
+                    });
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -89,9 +99,15 @@ class _EditProductState extends State<EditProduct> {
         if (_editedProduct.id != null) {
           Provider.of<Products>(context)
               .updateProduct(_editedProduct.id, _editedProduct);
+              
         } else {
           Provider.of<Products>(context, listen: false)
-              .addProduct(_editedProduct);
+              .addProduct(_editedProduct).then((_){
+                setState(() {
+                 _isLoading=false; 
+                });
+                Navigator.of(context).pop();
+              });
         }
       }
     });
@@ -104,12 +120,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text('Edit Product'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.save),
+            icon:Icon(Icons.save) ,
             onPressed: saveProduct,
           )
         ],
       ),
-      body: Padding(
+      body: _isLoading?Center(child:CircularProgressIndicator(),):Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
           key: _formKey,
@@ -117,6 +133,7 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  // onEditingComplete: isEdited,
                   decoration: InputDecoration(labelText: 'Title'),
                   initialValue: _initialValues['title'],
                   textInputAction: TextInputAction.next,
@@ -124,9 +141,9 @@ class _EditProductState extends State<EditProduct> {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
                   },
                   validator: (val) {
-                    if (val.isEmpty) {
+                    if (val.isEmpty) 
                       return 'Title field is required!';
-                    }
+                    return null;
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
@@ -152,6 +169,7 @@ class _EditProductState extends State<EditProduct> {
                     if (double.tryParse(val) == null)
                       return 'Price must be a number!';
                     if (double.parse(val) <= 0) return 'Invalid price!';
+                    return null;
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
@@ -164,6 +182,7 @@ class _EditProductState extends State<EditProduct> {
                   },
                 ),
                 TextFormField(
+                  // onEditingComplete: isEdited,
                   initialValue: _initialValues['description'],
                   decoration: InputDecoration(labelText: 'Description'),
                   textInputAction: TextInputAction.next,
@@ -174,6 +193,7 @@ class _EditProductState extends State<EditProduct> {
                     if (val.isEmpty) return 'Description field is requried';
                     if (val.length < 10)
                       return 'Description must be atleast 10 characters long!';
+                      return null;
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
@@ -205,6 +225,7 @@ class _EditProductState extends State<EditProduct> {
                               )),
                     Expanded(
                       child: TextFormField(
+                        // onEditingComplete: isEdited,
                         decoration: InputDecoration(labelText: 'Image Url'),
                         keyboardType: TextInputType.url,
                         textInputAction: TextInputAction.done,
@@ -218,6 +239,7 @@ class _EditProductState extends State<EditProduct> {
                           if (!val.endsWith('png') &&
                               !val.endsWith('jpg') &&
                               !val.endsWith('jpeg')) return 'Invalid imageUrl';
+                              return null;
                         },
                         onSaved: (value) {
                           _editedProduct = Product(

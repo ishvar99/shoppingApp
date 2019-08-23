@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/products.dart';
 import '../providers/product.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 class EditProduct extends StatefulWidget {
   static const namedroute = '/edit-products';
   @override
@@ -93,17 +93,18 @@ class _EditProductState extends State<EditProduct> {
                   },
                 )
               ],
-            )).then((val) {
+            )).then((val) async {
       if (val) {
         _formKey.currentState.save();
         if (_editedProduct.id != null) {
           Provider.of<Products>(context)
               .updateProduct(_editedProduct.id, _editedProduct);
         } else {
-          Provider.of<Products>(context, listen: false)
-              .addProduct(_editedProduct)
-              .catchError((error) {
-             return showDialog(
+          try {
+            await Provider.of<Products>(context, listen: false)
+                .addProduct(_editedProduct);
+          } catch (error) {
+            await showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
                       title: Text('An Error Occurred!'),
@@ -117,12 +118,12 @@ class _EditProductState extends State<EditProduct> {
                         )
                       ],
                     ));
-          }).then((_) {
+          } finally {
             setState(() {
               _isLoading = false;
             });
             Navigator.of(context).pop();
-          });
+          }
         }
       }
     });

@@ -6,6 +6,7 @@ import '../widgets/product_grid.dart';
 import 'package:provider/provider.dart';
 import '../providers/products.dart';
 import './cart.dart';
+
 enum filterOptions { showFavorites, showAll }
 
 class ProductsOverviewScreen extends StatefulWidget {
@@ -15,52 +16,72 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showFavorites = false;
+  var _isLoading = false;
+  @override
+  void initState() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    Provider.of<Products>(context, listen: false)
+        .getProducts() //with listen:true we need to move this in did change dependencies
+        .then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productData = Provider.of<Products>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ShopApp'),
-        actions: <Widget>[
-          Consumer<Cart>(
-            builder: (_, cart, child) => Badge(
-              child: child,
-              value: cart.itemCount.toString(),
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.namedroute);
-              },
-              icon: Icon(Icons.shopping_cart),
-            ),
-          ),
-          PopupMenuButton(
-            onSelected: (filterOptions val) {
-              setState(() {
-                if (val == filterOptions.showFavorites)
-                  _showFavorites = true;
-                else
-                  _showFavorites = false;
-              });
-            },
-            itemBuilder: (_) => [
-              //We return list of widgets
-              //which are added as entries in popup menu
-              PopupMenuItem(
-                value: filterOptions.showFavorites,
-                child: Text('Show Favorites'),
+        appBar: AppBar(
+          title: Text('ShopApp'),
+          actions: <Widget>[
+            Consumer<Cart>(
+              builder: (_, cart, child) => Badge(
+                child: child,
+                value: cart.itemCount.toString(),
               ),
-              PopupMenuItem(
-                value: filterOptions.showAll,
-                child: Text('Show All'),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(CartScreen.namedroute);
+                },
+                icon: Icon(Icons.shopping_cart),
+              ),
+            ),
+            PopupMenuButton(
+              onSelected: (filterOptions val) {
+                setState(() {
+                  if (val == filterOptions.showFavorites)
+                    _showFavorites = true;
+                  else
+                    _showFavorites = false;
+                });
+              },
+              itemBuilder: (_) => [
+                //We return list of widgets
+                //which are added as entries in popup menu
+                PopupMenuItem(
+                  value: filterOptions.showFavorites,
+                  child: Text('Show Favorites'),
+                ),
+                PopupMenuItem(
+                  value: filterOptions.showAll,
+                  child: Text('Show All'),
+                )
+              ],
+              icon: Icon(Icons.more_vert),
+            ),
+          ],
+        ),
+        body: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(),
               )
-            ],
-            icon: Icon(Icons.more_vert),
-          ),
-        ],
-      ),
-      body: new ProductGrid(_showFavorites),
-      drawer: DrawerWidget()
-    );
+            : new ProductGrid(_showFavorites),
+        drawer: DrawerWidget());
   }
 }

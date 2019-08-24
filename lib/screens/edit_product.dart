@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/products.dart';
 import '../providers/product.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 class EditProduct extends StatefulWidget {
   static const namedroute = '/edit-products';
   @override
@@ -20,13 +20,14 @@ class _EditProductState extends State<EditProduct> {
   final _formKey = GlobalKey<FormState>();
   var _init = true;
   var _isLoading = false;
+  String prodStatus;
   var _initialValues = {
     'title': '',
     'price': '',
     'description': '',
   };
   var _editedProduct =
-      Product(id: null, title: '', description: '', price: 0.0, imageUrl: '');
+      Product(id: null, title: '', description: '', price: 0.0, imageUrl: '',isFavorite: false);
   @override
   void initState() {
     _imageUrlFocusNode.addListener(updateImage);
@@ -84,6 +85,7 @@ class _EditProductState extends State<EditProduct> {
                       _isLoading = true;
                     });
                     Navigator.of(context).pop(true);
+                    
                   },
                 ),
                 FlatButton(
@@ -97,8 +99,12 @@ class _EditProductState extends State<EditProduct> {
       if (val) {
         _formKey.currentState.save();
         if (_editedProduct.id != null) {
-          Provider.of<Products>(context)
+          try{
+           await Provider.of<Products>(context)
               .updateProduct(_editedProduct.id, _editedProduct);
+          }catch(error){
+            print(error);
+          }
         } else {
           try {
             await Provider.of<Products>(context, listen: false)
@@ -118,17 +124,16 @@ class _EditProductState extends State<EditProduct> {
                         )
                       ],
                     ));
-          } finally {
+          }
+        } 
             setState(() {
               _isLoading = false;
-            });
+            });  
             Navigator.of(context).pop();
-          }
-        }
+          
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -9,6 +9,7 @@ class UserProductItem extends StatelessWidget {
   UserProductItem(this.product);
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     return ListTile(
         title: Text(product.title),
         leading: CircleAvatar(
@@ -34,7 +35,7 @@ class UserProductItem extends StatelessWidget {
                 color: Theme.of(context).errorColor,
               ),
               onPressed: () {
-                 showDialog(
+                showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
                     title: Text('Are you Sure'),
@@ -55,12 +56,19 @@ class UserProductItem extends StatelessWidget {
                       )
                     ],
                   ),
-                )
-              .then((val){
-                   if(val)
-                      Provider.of<Products>(context).deleteProduct(product.id);
+                ).then((val) async {
+                  if (val)
+                    try {
+                      await Provider.of<Products>(context, listen: false)
+                          .deleteProduct(product.id);
+                    } catch (_) {
+                      scaffold.showSnackBar(SnackBar(
+                          content: Text(
+                        'Deletion Error',
+                        textAlign: TextAlign.center,
+                      )));
+                    }
                 });
-              
               },
             )
           ]),

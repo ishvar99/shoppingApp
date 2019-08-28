@@ -27,7 +27,7 @@ class _EditProductState extends State<EditProduct> {
     'description': '',
   };
   var _editedProduct =
-      Product(id: null, title: '', description: '', price: 0.0, imageUrl: '',isFavorite: false);
+      Product(id: null, title: '', description: '', price: 0.0, imageUrl: '',isFavorite:false);
   @override
   void initState() {
     _imageUrlFocusNode.addListener(updateImage);

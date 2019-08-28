@@ -56,18 +56,18 @@ class UserProductItem extends StatelessWidget {
                       )
                     ],
                   ),
-                ).then((val) async {
+                ).then((val) {
                   if (val)
-                    try {
-                      await Provider.of<Products>(context, listen: false)
-                          .deleteProduct(product.id);
-                    } catch (_) {
+                    Provider.of<Products>(context, listen: false)
+                        .deleteProduct(product.id)
+                        .catchError((err) {
+                      // print(err);
                       scaffold.showSnackBar(SnackBar(
                           content: Text(
                         'Deletion Error',
                         textAlign: TextAlign.center,
                       )));
-                    }
+                    });
                 });
               },
             )

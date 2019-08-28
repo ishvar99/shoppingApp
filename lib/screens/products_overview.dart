@@ -17,20 +17,23 @@ class ProductsOverviewScreen extends StatefulWidget {
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showFavorites = false;
   var _isLoading = false;
+  var _init = false;
   @override
-  void initState() {
-    setState(() {
+  void didChangeDependencies() {
+    if (!_init) {
+      setState(() {
       _isLoading = true;
     });
-
-    Provider.of<Products>(context, listen: false)
-        .getProducts() //with listen:true we need to move this in did change dependencies
-        .then((_) {
-      setState(() {
-        _isLoading = false;
+      Provider.of<Products>(context)
+          .getProducts() //with listen:true we need to move this in did change dependencies
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
       });
-    });
-    super.initState();
+    }
+     _init=true;
+    super.didChangeDependencies();
   }
 
   @override
@@ -77,11 +80,15 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ),
           ],
         ),
-        body: _isLoading
+        body:RefreshIndicator(
+          onRefresh: () async{
+            await Provider.of<Products>(context).getProducts();
+          },
+          child:_isLoading
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : new ProductGrid(_showFavorites),
+            : new ProductGrid(_showFavorites)),
         drawer: DrawerWidget());
   }
 }

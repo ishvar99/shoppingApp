@@ -60,7 +60,8 @@ class Products with ChangeNotifier {
               title: prodData['title'],
               description: prodData['description'],
               imageUrl: prodData['imageUrl'],
-              price: prodData['price']),
+              price: prodData['price'],
+              isFavorite:prodData['isFavorite'])
         );
         _items = loadedProducts;
       });
@@ -112,7 +113,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://flutter-shopapp-6d9e6.firebaseio.com/products/$id';
+        'https://flutter-shopapp-6d9e6.firebaseio.com/products/$id.json';
     int productIndex = _items.indexWhere((pro) => pro.id == id);
     Product removedProduct = _items[productIndex];
     _items.removeAt(productIndex);

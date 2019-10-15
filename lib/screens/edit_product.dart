@@ -110,6 +110,7 @@ class _EditProductState extends State<EditProduct> {
             await Provider.of<Products>(context, listen: false)
                 .addProduct(_editedProduct);
           } catch (error) {
+            print(error);
             await showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(

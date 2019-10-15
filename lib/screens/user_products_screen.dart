@@ -7,7 +7,11 @@ import '../screens/edit_product.dart';
 class UserProductsScreen extends StatelessWidget {
   static const namedroute = '/user-products';
   Future<void> _refreshProducts(BuildContext context) async{
+    try{
     await Provider.of<Products>(context).getProducts();
+    }catch(error){
+      print(error);
+    }
   }
   @override
   Widget build(BuildContext context) {

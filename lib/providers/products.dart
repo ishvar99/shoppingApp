@@ -47,24 +47,36 @@ class Products with ChangeNotifier {
   }
 
   Future<void> getProducts() async {
-    const url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products.json';
+    // const url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products.json';
+    const url='http://192.168.56.1:3000/api/shop';
     try {
       final response = await http.get(url);
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final extractedData = json.decode(response.body);
       if (extractedData == null) return;
       final List<Product> loadedProducts = [];
-      extractedData.forEach((prodKey, prodData) {
-        loadedProducts.add(
+      extractedData.forEach((val){
+           loadedProducts.add(
           Product(
-              id: prodKey,
-              title: prodData['title'],
-              description: prodData['description'],
-              imageUrl: prodData['imageUrl'],
-              price: prodData['price'],
-              isFavorite:prodData['isFavorite'])
+              id: val['_id'],
+              title: val['title'],
+              description: val['description'],
+              imageUrl: val['imageUrl'],
+              price: val['price'],
+              isFavorite:val['isFavorite'])
         );
-        _items = loadedProducts;
       });
+      // extractedData.forEach((prodKey, prodData) {
+      //   loadedProducts.add(
+      //     Product(
+      //         id: prodKey,
+      //         title: prodData['title'],
+      //         description: prodData['description'],
+      //         imageUrl: prodData['imageUrl'],
+      //         price: prodData['price'],
+      //         isFavorite:prodData['isFavorite'])
+      //   );
+        _items = loadedProducts;
+      // });
     } catch (error) {
       throw error;
     }
@@ -73,18 +85,25 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products.json';
+    // const url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products.json';
+    const url='http://192.168.56.1:3000/api/shop';
     try {
       final response = await http.post(url,
-          body: json.encode({
+      headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+             body: {
             'title': product.title,
-            'price': product.price,
+            'price':product.price.toString(),
             'description': product.description,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite
-          }));
+            'isFavorite': product.isFavorite.toString()
+          },
+          encoding: Encoding.getByName("utf-8"));
+       print(response.body);
       _items.add(Product(
-        id: json.decode(response.body)['name'],
+        id: json.decode(response.body)['_id'],
         title: product.title,
         price: product.price,
         description: product.description,

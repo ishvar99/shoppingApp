@@ -48,7 +48,8 @@ class Products with ChangeNotifier {
 
   Future<void> getProducts() async {
     // const url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products.json';
-    const url='http://192.168.56.1:3000/api/shop';
+    const url='http://192.168.56.1:3000/api/products';
+    // final url='http://ec2-35-153-139-35.compute-1.amazonaws.com/api/shop';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body);
@@ -61,7 +62,7 @@ class Products with ChangeNotifier {
               title: val['title'],
               description: val['description'],
               imageUrl: val['imageUrl'],
-              price: val['price'],
+              price: val['price'].toDouble(),
               isFavorite:val['isFavorite'])
         );
       });
@@ -86,7 +87,8 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     // const url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products.json';
-    const url='http://192.168.56.1:3000/api/shop';
+    const url='http://192.168.56.1:3000/api/products';
+    //  final url='http://ec2-35-153-139-35.compute-1.amazonaws.com/api/shop';
     try {
       final response = await http.post(url,
       headers: {
@@ -116,23 +118,25 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateProduct(String productId, Product newProduct) async {
-    final url =
-        'https://flutter-shopapp-6d9e6.firebaseio.com/products/$productId.json';
+    // final url = 'https://flutter-shopapp-6d9e6.firebaseio.com/products/$productId.json';
+    final url='http://192.168.56.1:3000/api/products/$productId';
+    //  final url='http://ec2-35-153-139-35.compute-1.amazonaws.com/api/shop/$productId';
     int prodIndex = _items.indexWhere((pro) => pro.id == productId);
     await http.patch(url,
-        body: json.encode({
+        body: {
           'title': newProduct.title,
           'description': newProduct.description,
-          'price': newProduct.price,
+          'price': newProduct.price.toString(),
           'imageUrl': newProduct.imageUrl
-        }));
+        });
     _items[prodIndex] = newProduct;
     notifyListeners();
   }
 
   Future<void> deleteProduct(String id) async {
-    final url =
-        'https://flutter-shopapp-6d9e6.firebaseio.com/products/$id.json';
+    // final url ='https://flutter-shopapp-6d9e6.firebaseio.com/products/$id.json';
+     final url='http://192.168.56.1:3000/api/products/$id';
+    //  final url='http://ec2-35-153-139-35.compute-1.amazonaws.com/api/shop/$id';
     int productIndex = _items.indexWhere((pro) => pro.id == id);
     Product removedProduct = _items[productIndex];
     _items.removeAt(productIndex);

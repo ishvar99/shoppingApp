@@ -81,7 +81,7 @@ class _OrderButtonState extends State<OrderButton> {
         'ORDER NOW',
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
-      onPressed: widget.cart.totalAmount<=0||_isLoading?null: () async{
+      onPressed: (widget.cart.totalAmount<=0||_isLoading)?null: () async{
         setState(() {
          _isLoading=true; 
         });

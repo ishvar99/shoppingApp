@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app2/screens/auth_screen.dart';
 import './screens/edit_product.dart';
 import './screens/user_products_screen.dart';
 import './providers/orders.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.purple,
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato'),
-        home: ProductsOverviewScreen(),
+        home:AuthScreen(),
         routes: {
           ProductDetailsScreen.namedRoute: (_) => ProductDetailsScreen(),
           CartScreen.namedroute: (_) => CartScreen(),
